@@ -1,50 +1,69 @@
-# ZimbraRestApi
+# Zimbra PreAuth REST Service
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/zimbra_rest_api`. To experiment with that code, run `bin/console` for an interactive prompt.
+`Zimbra PreAuth REST Service` es una simple aplicación Web que permite obtener una
+`URL` de ingreso al Webmail de Zimbra usando `PreAuth Keys`.
 
-TODO: Delete this and the text above, and describe your gem
+Además de la URL de ingreso, la aplicación entrega una respuesta `JSON` con
+la siguiente información:
 
-## Installation
+* `email`, dirección de correo real del usuario, no un alias si usó el alias para autenticarse
+* `last_name` y `first_name`, se explican solos
+* `preauth_token`, es el token del dominio
+* `domain`, es el dominio real,
+* `default_team`, nombre del equipo de chat basado en el dominio
+* `mail_login_url`, URL para ingresar directamente al Webmail
 
-Add this line to your application's Gemfile:
 
-```ruby
-gem 'zimbra_rest_api'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install zimbra_rest_api
-
-## Usage
-
-### Search
-You can search al the objects like:
+Por ejemplo:
 
 ```
-get '/accounts/', zimbraIsAdminAccount: 'TRUE'
+$ curl --data 'email=admin@zboxapp.dev&password=12345678' 10.211.55.38:9292/login
 ```
 
-or
+responde con
+
+```json
+{
+  "email": "admin@zboxapp.dev",
+  "last_name": "admin",
+  "first_name": null,
+  "preauth_token": "1c748459f79083be7a69bcec3e71523dffd778b1e7c86328dcd86f131605c279",
+  "domain": "zboxapp.dev",
+  "default_team": "zboxapp_dev",
+  "mail_login_url": "https://mail.zboxapp.com/service/preauth?account=admin@zboxapp.dev&timestamp=1445280915287&preauth=2fda92083f5fe2438adf2872e42c78c95b851248&expires=0"
+}
+```
+
+## Uso imagen Docker
+
+La aplicación necesita que le pases las siguientes variables de entorno para funcionar:
+
+* `ldap_host`, la dirección IP de un servidor LDAP de Zimbra.
+* `ldap_port`, el puerto en que escucha el LDAP.
+* `ldap_binddn`, usuario con permisos de conexión al LDAP.
+* `ldap_passwd`, clarito no?
+* `mail_host`, nombre que se usa en la URL si el dominio no tiene `virtual_host`.
+
+Por ejemplo puedes correr con Docker ejecutando:
 
 ```
-ldap_filter = '(|(zimbraMailDeliveryAddress=*@zboxapp.dev)(zimbraMailDeliveryAddress=*@customer1.dev))'
-get '/accounts/', raw_ldap_filter: ldap_filter
+$ docker run -p 9292:9292 -e ldap_host=192.168.50.10 \
+  -e ldap_port=389 \
+  -e ldap_binddn='uid=zimbra,cn=admins,cn=zimbra' \
+  -e ldap_passwd='12345678' \
+  -e mail_host='mail.zboxapp.com' \
+  pbruna/zbox_zimbra_preauth
 ```
 
-## Development
+El caso de **mail_host** es para crear la URL de ingreso cuando el cliente no tiene un dominio propio de ingreso. Hay algunos clientes que ingresan al Webmail usando un
+nombre de dominio propio, por ejemplo: `webmail.acme.com`.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
+También puedes clonar el repo y hacer como gustes!!!
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/zimbra_rest_api/fork )
+1. Fork it ( https://github.com/zboxapp/zimbra-preauth-service/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
