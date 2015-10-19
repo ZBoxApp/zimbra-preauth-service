@@ -17,7 +17,7 @@ la siguiente información:
 Por ejemplo:
 
 ```
-$ curl --data 'email=admin@zboxapp.dev&password=12345678' 10.211.55.38:9292/login
+$ curl --data 'email=admin@zboxapp.dev&password=12345678' http://10.211.55.38:9292/login
 ```
 
 responde con
