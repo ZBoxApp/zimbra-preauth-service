@@ -61,6 +61,10 @@ nombre de dominio propio, por ejemplo: `webmail.acme.com`.
 También puedes clonar el repo y hacer como gustes!!!
 
 
+## Sobre Zimbra PreaAuth
+En el fondo es una forma de no tener que validar al usuario más de una vez.
+Pero mejor lee la documentación: https://wiki.zimbra.com/wiki/Preauth
+
 ## Contributing
 
 1. Fork it ( https://github.com/zboxapp/zimbra-preauth-service/fork )
