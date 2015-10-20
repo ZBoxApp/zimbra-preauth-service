@@ -75,7 +75,7 @@ module ZimbraPreauthService
         first_name: ldap_data(user['givenname']),
         preauth_token: preauth_token,
         domain: login_email.split(/@/)[1],
-        default_team: login_email.split(/@/)[1].gsub(/\./, '_'),
+        default_team: login_email.split(/@/)[1].gsub(/\./, '-'),
         mail_login_url: build_login_url(login_email, preauth_token)
       )
     end
