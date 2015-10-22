@@ -71,8 +71,8 @@ module ZimbraPreauthService
       preauth_token = user_preauth_key(login_email)
       OpenStruct.new(
         email: login_email,
-        last_name: ldap_data(user['sn']),
-        first_name: ldap_data(user['givenname']),
+        last_name: ldap_data(user['sn']).force_encoding('UTF-8'),
+        first_name: ldap_data(user['givenname']).force_encoding('UTF-8'),
         preauth_token: preauth_token,
         domain: login_email.split(/@/)[1],
         default_team: login_email.split(/@/)[1].gsub(/\./, '-'),
