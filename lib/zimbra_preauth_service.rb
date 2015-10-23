@@ -69,10 +69,12 @@ module ZimbraPreauthService
       user = find_user(email)
       login_email = user.zimbramaildeliveryaddress.first
       preauth_token = user_preauth_key(login_email)
+      firstname = ldap_data(user['sn'])
+      lastname = ldap_data(user['givenname'])
       OpenStruct.new(
         email: login_email,
-        last_name: ldap_data(user['sn']).force_encoding('UTF-8'),
-        first_name: ldap_data(user['givenname']).force_encoding('UTF-8'),
+        last_name: firstname.nil? ? nil : firstname.force_encoding('UTF-8'),
+        first_name: lastname.nil? ? nil : lastname.force_encoding('UTF-8'),
         preauth_token: preauth_token,
         domain: login_email.split(/@/)[1],
         default_team: login_email.split(/@/)[1].gsub(/\./, '-'),
@@ -106,7 +108,7 @@ module ZimbraPreauthService
     def ldap_data(data)
       return '' if data.nil?
       return data.first if data.is_a?Array
-      data
+      data.to_s
     end
 
     def user_preauth_key(email)
