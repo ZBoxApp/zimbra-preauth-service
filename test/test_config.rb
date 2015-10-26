@@ -32,7 +32,7 @@ class ConfigTest < Minitest::Test
   end
 
   def test_config_defaul_host
-    ENV.delete 'zbox_default_host'
+    ENV.delete 'mail_host'
     assert_raises(ZimbraPreauthService::Errors::MailHost) {
       ZimbraPreauthService.mail_host
     }

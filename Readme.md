@@ -30,6 +30,7 @@ responde con
   "preauth_token": "1c748459f79083be7a69bcec3e71523dffd778b1e7c86328dcd86f131605c279",
   "domain": "zboxapp.dev",
   "default_team": "zboxapp_dev",
+  "chat_enabled": 'TRUE',
   "mail_login_url": "https://mail.zboxapp.com/service/preauth?account=admin@zboxapp.dev&timestamp=1445280915287&preauth=2fda92083f5fe2438adf2872e42c78c95b851248&expires=0"
 }
 ```
@@ -59,6 +60,13 @@ El caso de **mail_host** es para crear la URL de ingreso cuando el cliente no ti
 nombre de dominio propio, por ejemplo: `webmail.acme.com`.
 
 También puedes clonar el repo y hacer como gustes!!!
+
+## Configuracion de Zimbra
+Usamos el atributo `postOfficeBox` del LDAP para almacenar el
+nombre del **Equipo de Chat** al que pertenece el usuario y o dominio.
+
+Usamos el atributo `zimbraFeatureIMEnabled` del usuario para indicar con `TRUE` o
+`FALSE` si tiene activado el Chat.
 
 
 ## Sobre Zimbra PreaAuth

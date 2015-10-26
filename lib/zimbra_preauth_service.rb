@@ -71,14 +71,16 @@ module ZimbraPreauthService
       preauth_token = user_preauth_key(login_email)
       firstname = ldap_data(user['sn'])
       lastname = ldap_data(user['givenname'])
+      default_team = find_team_name(user)
       OpenStruct.new(
         email: login_email,
         last_name: firstname.nil? ? nil : firstname.force_encoding('UTF-8'),
         first_name: lastname.nil? ? nil : lastname.force_encoding('UTF-8'),
         preauth_token: preauth_token,
         domain: login_email.split(/@/)[1],
-        default_team: login_email.split(/@/)[1].gsub(/\./, '-'),
-        mail_login_url: build_login_url(login_email, preauth_token)
+        default_team: default_team,
+        mail_login_url: build_login_url(login_email, preauth_token),
+        chat_enabled: chat_enabled?(user)
       )
     end
 
@@ -88,6 +90,13 @@ module ZimbraPreauthService
       r = client.search( base: base, filter: filter).first
       fail ZimbraPreauthService::Errors::UserNotFound if r.nil?
       r
+    end
+
+    def find_team_name(user)
+      return user['postofficebox'].first if user['postofficebox'].any?
+      domain = find_domain(user['zimbramaildeliveryaddress'].first.split(/@/)[1])
+      return domain['postofficebox'].first if domain['postofficebox'].any?
+      fail ZimbraPreauthService::Errors::MissingChatTeamName
     end
 
     def find_domain(domain_name)
@@ -111,6 +120,11 @@ module ZimbraPreauthService
       data.to_s
     end
 
+    def chat_enabled?(user)
+      return true if user['zimbrafeatureimenabled'].first == 'TRUE'
+      false
+    end
+
     def user_preauth_key(email)
       domain_name = email.split(/@/)[1]
       domain = find_domain(domain_name)
@@ -130,5 +144,6 @@ module ZimbraPreauthService
     class UserNotFound < StandardError; end
     class DomainNotFound < StandardError; end
     class MailHost < StandardError; end
+    class MissingChatTeamName < StandardError; end
   end
 end
