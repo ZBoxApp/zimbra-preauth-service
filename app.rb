@@ -16,10 +16,7 @@ class App < Sinatra::Base
 
   post '/url' do
     user = ZimbraPreauthService.user_info params[:email]
-    url = OpenStruct.new(
-        mail_login_url: user.mail_login_url
-    )
-    json url.marshal_dump
+    json user.marshal_dump
   end
 
   run! if app_file == $0
